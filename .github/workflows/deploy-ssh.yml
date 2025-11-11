@@ -1,0 +1,40 @@
+name: SSH Deploy + Server WebDoctor
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */6 * * *"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Archive repo
+        run: tar -czf site_package.tar.gz --exclude .git --exclude node_modules .
+
+      - name: Upload package to server (SCP)
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "site_package.tar.gz"
+          target: "/home/${{ secrets.SSH_USER }}/chhama_deploy_tmp/"
+
+      - name: Run remote deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+            cd /home/${{ secrets.SSH_USER }}/chhama_deploy_tmp/
+            tar -xzf site_package.tar.gz -C /home/${{ secrets.SSH_USER }}/chhama_deploy_tmp/
+            bash /home/${{ secrets.SSH_USER }}/chhama_deploy_tmp/scripts/server_deploy.sh

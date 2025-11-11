@@ -1,0 +1,5 @@
+# Files/dirs to exclude from deployment (example)
+.git
+node_modules
+*.pem
+*.key

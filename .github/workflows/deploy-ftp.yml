@@ -1,0 +1,43 @@
+name: FTP Deploy + Verify (CHHAMA)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * *"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: FTP Deploy (SamKirkland)
+        uses: SamKirkland/FTP-Deploy-Action@4.2.0
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          local-dir: ./
+          server-dir: ${{ secrets.FTP_REMOTE_ROOT }}
+          git-ftp-args: --insecure
+
+      - name: Wait 5s
+        run: sleep 5
+
+      - name: HTTP verify
+        run: |
+          URL="https://${{ secrets.SITE_DOMAIN }}/"
+          echo "Checking $URL"
+          status=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
+          echo "HTTP STATUS: $status"
+          if [[ "$status" -ge 200 && "$status" -lt 400 ]]; then
+            echo "Site OK"
+          else
+            echo "Site check failed with $status"
+            exit 1
+          fi
