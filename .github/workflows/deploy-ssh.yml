@@ -1,7 +1,8 @@
 name: SSH Deploy + Server WebDoctor
 
 on:
-  push:
+  workflow_dispatch:
+push:
     branches: [ main ]
   workflow_dispatch:
   schedule:
@@ -38,5 +39,6 @@ jobs:
             cd /home/${{ secrets.SSH_USER }}/chhama_deploy_tmp/
 tar --warning=no-file-changed --ignore-failed-read -czf site_package.tar.gz --exclude .git --exclude node_modules --exclude-from=deploy-exclude.txt .
             bash /home/${{ secrets.SSH_USER }}/chhama_deploy_tmp/scripts/server_deploy.sh
+
 
 
