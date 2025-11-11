@@ -24,7 +24,6 @@ jobs:
           port: 21
           local-dir: ./
           server-dir: ${{ secrets.FTP_REMOTE_ROOT }}
-          git-ftp-args: --insecure
 
       - name: Wait 5s
         run: sleep 5
@@ -41,3 +40,4 @@ jobs:
             echo "Site check failed with $status"
             exit 1
           fi
+
