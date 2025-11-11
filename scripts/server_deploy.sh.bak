@@ -2,7 +2,7 @@
 set -euo pipefail
 TIMESTAMP=$(date '+%Y%m%d_%H%M%S')
 DEPLOY_TMP="$HOME/chhama_deploy_tmp_$TIMESTAMP"
-LIVE_ROOT="/home/e5khdkcsrpke/public_html"
+LIVE_ROOT="/home/$USER/public_html"
 BACKUP_DIR="$HOME/chhama_backups_$TIMESTAMP"
 
 echo "Deploy tmp: $DEPLOY_TMP"
@@ -20,4 +20,3 @@ if [ -x "$LIVE_ROOT/scripts/webdoctor-server.sh" ]; then
 fi
 
 echo "Deploy done at $TIMESTAMP"
-
