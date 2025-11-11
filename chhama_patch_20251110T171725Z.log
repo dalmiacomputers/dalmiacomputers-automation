@@ -1,0 +1,5 @@
+[2025-11-10T17:17:25.0849154+05:30] Starting CHHAMA One-Click Patch (fixed) - 20251110T171725Z
+[2025-11-10T17:18:58.4282054+05:30] BackupDir=C:\Users\Dalmia Computers\Downloads\chhama_windows_master\backup_20251110T171725Z  PatchDir=C:\Users\Dalmia Computers\Downloads\chhama_windows_master\patch_20251110T171725Z
+[2025-11-10T17:18:58.4419520+05:30] WinSCP .NET assembly not found - will attempt plain FTP fallback (may fail for FTPS/SFTP).
+[2025-11-10T17:18:58.4464300+05:30] WinSCP not present or skipped. Falling back to plain FTP (no TLS).
+[2025-11-10T17:18:58.4674724+05:30] ERROR: Cannot overwrite variable host because it is read-only or constant.

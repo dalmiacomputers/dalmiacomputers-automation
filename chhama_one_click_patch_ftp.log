@@ -1,0 +1,166 @@
+[2025-11-10 19:05:24Z] Starting FTP patch run. Host: 107.180.113.63  RemoteRoot: /public_html  Domain: dalmiacomputers.in
+[2025-11-10 19:05:24Z] BackupDir=C:\Users\Dalmia Computers\Downloads\chhama_windows_master\backup_20251110T190524Z PatchDir=C:\Users\Dalmia Computers\Downloads\chhama_windows_master\patch_20251110T190524Z
+[2025-11-10 19:05:24Z] Starting FTP recursive download (this may take a few minutes)...
+[2025-11-10 19:05:24Z] Download stage failed: Cannot overwrite variable host because it is read-only or constant.
+[2025-11-10 19:05:24Z] Backup zipped to C:\Users\Dalmia Computers\Downloads\chhama_windows_master\backup_20251110T190524Z.zip
+[2025-11-10 19:05:24Z] Patch files created.
+[2025-11-10 19:05:24Z] Upload stage error: Cannot overwrite variable host because it is read-only or constant.
+[2025-11-10 19:05:24Z] Verifying https://dalmiacomputers.in ...
+[2025-11-10 19:05:25Z] HTTP verify success: Status 200
+[2025-11-10 19:05:25Z] One-click FTP patch finished. Check backup zip, patch folder and log file.
+[2025-11-10 19:13:49Z] Starting FTP patch run. Host: 107.180.113.63 RemoteRoot: /public_html Domain: dalmiacomputers.in
+[2025-11-10 19:13:50Z] Backing up site...
+[2025-11-10 19:13:58Z] List failed /public_html/public_html/fallback_reviews.json
+[2025-11-10 19:14:02Z] List failed /public_html/public_html/careers
+[2025-11-10 19:14:07Z] List failed /public_html/public_html/save_page.php
+[2025-11-10 19:14:12Z] List failed /public_html/public_html/theme
+[2025-11-10 19:14:16Z] List failed /public_html/public_html/snippets
+[2025-11-10 19:14:21Z] List failed /public_html/public_html/?action=autofix_create_placeholders
+[2025-11-10 19:14:28Z] List failed /public_html/public_html/support
+[2025-11-10 19:14:33Z] List failed /public_html/public_html/3_diagnose.ps1
+[2025-11-10 19:14:44Z] List failed /public_html/public_html/docs
+[2025-11-10 19:14:49Z] List failed /public_html/public_html/404.html
+[2025-11-10 19:14:54Z] List failed /public_html/public_html/?
+[2025-11-10 19:14:58Z] List failed /public_html/public_html/diagnostics
+[2025-11-10 19:15:03Z] List failed /public_html/public_html/save.php
+[2025-11-10 19:15:08Z] List failed /public_html/public_html/premium_index.html
+[2025-11-10 19:15:13Z] List failed /public_html/public_html/2_setup_ssh_git.ps1
+[2025-11-10 19:15:17Z] List failed /public_html/public_html/site_fixed_pack
+[2025-11-10 19:15:22Z] List failed /public_html/public_html/pages
+[2025-11-10 19:15:27Z] List failed /public_html/public_html/partials
+[2025-11-10 19:15:31Z] List failed /public_html/public_html/assets
+[2025-11-10 19:15:36Z] List failed /public_html/public_html/tally
+[2025-11-10 19:15:40Z] List failed /public_html/public_html/quickheal
+[2025-11-10 19:15:42Z] List failed /public_html/public_html/#about
+[2025-11-10 19:15:47Z] List failed /public_html/public_html/widgets
+[2025-11-10 19:15:51Z] List failed /public_html/public_html/php_test.php
+[2025-11-10 19:15:56Z] List failed /public_html/public_html/sitemap.xml
+[2025-11-10 19:16:00Z] List failed /public_html/public_html/qa
+[2025-11-10 19:16:05Z] List failed /public_html/public_html/1_install.ps1
+[2025-11-10 19:16:09Z] List failed /public_html/public_html/run_all.ps1
+[2025-11-10 19:16:15Z] List failed /public_html/public_html/secrets.encrypted
+[2025-11-10 19:16:19Z] List failed /public_html/public_html/exchange
+[2025-11-10 19:16:24Z] List failed /public_html/public_html/sql
+[2025-11-10 19:16:29Z] List failed /public_html/public_html/php_debug_info.php
+[2025-11-10 19:16:33Z] List failed /public_html/public_html/?action=autofix_create_theme
+[2025-11-10 19:16:38Z] List failed /public_html/public_html/uploads
+[2025-11-10 19:16:42Z] List failed /public_html/public_html/dalmiacomputers.in
+[2025-11-10 19:16:47Z] List failed /public_html/public_html/chhama.config.json
+[2025-11-10 19:16:51Z] List failed /public_html/public_html/services_filebak
+[2025-11-10 19:16:56Z] List failed /public_html/public_html/api
+[2025-11-10 19:16:58Z] List failed /public_html/public_html/#
+[2025-11-10 19:17:05Z] List failed /public_html/public_html/db
+[2025-11-10 19:17:05Z] Backup error: Cannot bind argument to parameter 'Path' because it is an empty string.
+[2025-11-10 19:17:05Z] Backup zipped.
+[2025-11-10 19:17:05Z] Patch files created.
+[2025-11-10 19:17:09Z] Upload error: Exception calling "GetRequestStream" with "0" argument(s): "The remote server returned an error: (553) File name not allowed."
+[2025-11-10 19:17:09Z] Verifying https://dalmiacomputers.in ...
+[2025-11-10 19:17:10Z] HTTP verify success: Status 200
+[2025-11-10 19:17:10Z] One-click FTP patch finished.
+[2025-11-10 19:26:23Z] Starting FTP patch run. Host: 107.180.113.63 RemoteRoot: public_html Domain: dalmiacomputers.in
+[2025-11-10 19:26:23Z] Backing up site...
+[2025-11-10 19:26:24Z] List failed public_html
+[2025-11-10 19:26:24Z] Backup zipped.
+[2025-11-10 19:26:24Z] Patch files created.
+[2025-11-10 19:26:32Z] Upload error: Exception calling "GetRequestStream" with "0" argument(s): "The remote name could not be resolved"
+[2025-11-10 19:26:32Z] Verifying https://dalmiacomputers.in ...
+[2025-11-10 19:26:35Z] HTTP verify success: Status 200
+[2025-11-10 19:26:35Z] One-click FTP patch finished.
+[2025-11-10 19:32:24Z] Starting FTP patch run. Host: 107.180.113.63 RemoteRoot: /public_html Domain: dalmiacomputers.in
+[2025-11-10 19:32:24Z] Backing up site...
+[2025-11-10 19:32:31Z] List failed /public_html/public_html/fallback_reviews.json
+[2025-11-10 19:32:36Z] List failed /public_html/public_html/careers
+[2025-11-10 19:32:40Z] List failed /public_html/public_html/save_page.php
+[2025-11-10 19:32:45Z] List failed /public_html/public_html/theme
+[2025-11-10 19:32:49Z] List failed /public_html/public_html/snippets
+[2025-11-10 19:32:54Z] List failed /public_html/public_html/?action=autofix_create_placeholders
+[2025-11-10 19:32:59Z] List failed /public_html/public_html/support
+[2025-11-10 19:33:03Z] List failed /public_html/public_html/3_diagnose.ps1
+[2025-11-10 19:33:08Z] List failed /public_html/public_html/docs
+[2025-11-10 19:33:12Z] List failed /public_html/public_html/404.html
+[2025-11-10 19:33:17Z] List failed /public_html/public_html/?
+[2025-11-10 19:33:21Z] List failed /public_html/public_html/diagnostics
+[2025-11-10 19:33:25Z] List failed /public_html/public_html/save.php
+[2025-11-10 19:33:30Z] List failed /public_html/public_html/premium_index.html
+[2025-11-10 19:33:35Z] List failed /public_html/public_html/2_setup_ssh_git.ps1
+[2025-11-10 19:33:40Z] List failed /public_html/public_html/site_fixed_pack
+[2025-11-10 19:33:45Z] List failed /public_html/public_html/pages
+[2025-11-10 19:33:51Z] List failed /public_html/public_html/partials
+[2025-11-10 19:33:55Z] List failed /public_html/public_html/assets
+[2025-11-10 19:34:00Z] List failed /public_html/public_html/tally
+[2025-11-10 19:34:04Z] List failed /public_html/public_html/quickheal
+[2025-11-10 19:34:06Z] List failed /public_html/public_html/#about
+[2025-11-10 19:34:11Z] List failed /public_html/public_html/widgets
+[2025-11-10 19:34:15Z] List failed /public_html/public_html/php_test.php
+[2025-11-10 19:34:20Z] List failed /public_html/public_html/sitemap.xml
+[2025-11-10 19:34:24Z] List failed /public_html/public_html/qa
+[2025-11-10 19:34:29Z] List failed /public_html/public_html/1_install.ps1
+[2025-11-10 19:34:33Z] List failed /public_html/public_html/run_all.ps1
+[2025-11-10 19:34:38Z] List failed /public_html/public_html/secrets.encrypted
+[2025-11-10 19:34:42Z] List failed /public_html/public_html/exchange
+[2025-11-10 19:34:47Z] List failed /public_html/public_html/sql
+[2025-11-10 19:34:52Z] List failed /public_html/public_html/php_debug_info.php
+[2025-11-10 19:34:56Z] List failed /public_html/public_html/?action=autofix_create_theme
+[2025-11-10 19:35:01Z] List failed /public_html/public_html/uploads
+[2025-11-10 19:35:06Z] List failed /public_html/public_html/dalmiacomputers.in
+[2025-11-10 19:35:10Z] List failed /public_html/public_html/chhama.config.json
+[2025-11-10 19:35:15Z] List failed /public_html/public_html/services_filebak
+[2025-11-10 19:35:19Z] List failed /public_html/public_html/api
+[2025-11-10 19:35:21Z] List failed /public_html/public_html/#
+[2025-11-10 19:35:26Z] List failed /public_html/public_html/db
+[2025-11-10 19:35:26Z] Backup error: Cannot bind argument to parameter 'Path' because it is an empty string.
+[2025-11-10 19:35:26Z] Backup zipped.
+[2025-11-10 19:35:26Z] Patch files created.
+[2025-11-10 19:35:30Z] Upload error: Exception calling "GetRequestStream" with "0" argument(s): "The remote server returned an error: (553) File name not allowed."
+[2025-11-10 19:35:30Z] Verifying https://dalmiacomputers.in ...
+[2025-11-10 19:35:31Z] HTTP verify success: Status 200
+[2025-11-10 19:35:31Z] One-click FTP patch finished.
+[2025-11-10 19:40:14Z] Starting FTP patch run. Host: 107.180.113.63 RemoteRoot: /public_html Domain: dalmiacomputers.in
+[2025-11-10 19:40:14Z] Backing up site...
+[2025-11-10 19:40:21Z] List failed /public_html/public_html/fallback_reviews.json
+[2025-11-10 19:40:26Z] List failed /public_html/public_html/careers
+[2025-11-10 19:40:30Z] List failed /public_html/public_html/save_page.php
+[2025-11-10 19:40:35Z] List failed /public_html/public_html/theme
+[2025-11-10 19:40:39Z] List failed /public_html/public_html/snippets
+[2025-11-10 19:40:44Z] List failed /public_html/public_html/?action=autofix_create_placeholders
+[2025-11-10 19:40:49Z] List failed /public_html/public_html/support
+[2025-11-10 19:40:53Z] List failed /public_html/public_html/3_diagnose.ps1
+[2025-11-10 19:40:58Z] List failed /public_html/public_html/docs
+[2025-11-10 19:41:02Z] List failed /public_html/public_html/404.html
+[2025-11-10 19:41:07Z] List failed /public_html/public_html/?
+[2025-11-10 19:41:11Z] List failed /public_html/public_html/diagnostics
+[2025-11-10 19:41:16Z] List failed /public_html/public_html/save.php
+[2025-11-10 19:41:20Z] List failed /public_html/public_html/premium_index.html
+[2025-11-10 19:41:24Z] List failed /public_html/public_html/2_setup_ssh_git.ps1
+[2025-11-10 19:41:29Z] List failed /public_html/public_html/site_fixed_pack
+[2025-11-10 19:41:34Z] List failed /public_html/public_html/pages
+[2025-11-10 19:41:38Z] List failed /public_html/public_html/partials
+[2025-11-10 19:41:43Z] List failed /public_html/public_html/assets
+[2025-11-10 19:41:47Z] List failed /public_html/public_html/tally
+[2025-11-10 19:41:52Z] List failed /public_html/public_html/quickheal
+[2025-11-10 19:41:54Z] List failed /public_html/public_html/#about
+[2025-11-10 19:41:58Z] List failed /public_html/public_html/widgets
+[2025-11-10 19:42:03Z] List failed /public_html/public_html/php_test.php
+[2025-11-10 19:42:07Z] List failed /public_html/public_html/sitemap.xml
+[2025-11-10 19:42:12Z] List failed /public_html/public_html/qa
+[2025-11-10 19:42:16Z] List failed /public_html/public_html/1_install.ps1
+[2025-11-10 19:42:21Z] List failed /public_html/public_html/run_all.ps1
+[2025-11-10 19:42:26Z] List failed /public_html/public_html/secrets.encrypted
+[2025-11-10 19:42:30Z] List failed /public_html/public_html/exchange
+[2025-11-10 19:42:34Z] List failed /public_html/public_html/sql
+[2025-11-10 19:42:39Z] List failed /public_html/public_html/php_debug_info.php
+[2025-11-10 19:42:43Z] List failed /public_html/public_html/?action=autofix_create_theme
+[2025-11-10 19:42:48Z] List failed /public_html/public_html/uploads
+[2025-11-10 19:42:52Z] List failed /public_html/public_html/dalmiacomputers.in
+[2025-11-10 19:42:57Z] List failed /public_html/public_html/chhama.config.json
+[2025-11-10 19:43:02Z] List failed /public_html/public_html/services_filebak
+[2025-11-10 19:43:06Z] List failed /public_html/public_html/api
+[2025-11-10 19:43:08Z] List failed /public_html/public_html/#
+[2025-11-10 19:43:13Z] List failed /public_html/public_html/db
+[2025-11-10 19:43:13Z] Backup error: Cannot bind argument to parameter 'Path' because it is an empty string.
+[2025-11-10 19:43:13Z] Backup zipped.
+[2025-11-10 19:43:13Z] Patch files created.
+[2025-11-10 19:43:18Z] Upload error: Exception calling "GetRequestStream" with "0" argument(s): "The remote server returned an error: (553) File name not allowed."
+[2025-11-10 19:43:18Z] Verifying https://dalmiacomputers.in ...
+[2025-11-10 19:43:19Z] HTTP verify success: Status 200
+[2025-11-10 19:43:19Z] One-click FTP patch finished.

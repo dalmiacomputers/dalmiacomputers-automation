@@ -1,0 +1,17 @@
+﻿{
+    "timestamp":  "20251110-122420",
+    "git_version":  "git version 2.51.2.windows.1",
+    "git_remotes":  "fatal: not a git repository (or any of the parent directories): .git",
+    "ssh_test":  "git@github.com: Permission denied (publickey).",
+    "node_version":  "ERROR: The term \u0027node\u0027 is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.",
+    "npm_version":  "ERROR: The term \u0027npm\u0027 is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.",
+    "python_version":  "Python 3.13.7",
+    "pip_version":  "pip 25.2 from C:\\Users\\Dalmia Computers\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pip (python 3.13)\n",
+    "ports":  {
+                  "80":  "closed",
+                  "3000":  "closed",
+                  "443":  "closed"
+              },
+    "dns_lookup":  "Non-authoritative answer:\nSystem.Management.Automation.RemoteException\nServer:  reliance.reliance\nAddress:  2405:201:9000:286c::c0a8:1d01\n\nName:    dalmiacomputers.in\nAddress:  107.180.113.63\n",
+    "site_head":  "\nHTTP_OK"
+}

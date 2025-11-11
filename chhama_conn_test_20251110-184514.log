@@ -1,0 +1,21 @@
+[2025-11-10 18:47:08Z] === CHHAMA connection tester starting ===
+[2025-11-10 18:47:08Z] Host: 107.180.113.63  User: amitdalmia@dalmiacomputers.in
+[2025-11-10 18:47:08Z] Log: C:\Users\Dalmia Computers\Downloads\chhama_windows_master\chhama_conn_test_20251110-184514.log
+[2025-11-10 18:47:08Z] Resolving host...
+[2025-11-10 18:47:08Z] No A/AAAA records found.
+[2025-11-10 18:47:08Z] Ping test...
+[2025-11-10 18:47:10Z] Ping error: The property 'ResponseTime' cannot be found on this object. Verify that the property exists.
+[2025-11-10 18:47:17Z] Port 21 (FTP) -> TcpTestSucceeded=True  RemoteAddress=107.180.113.63
+[2025-11-10 18:47:25Z] Port 990 (FTPS-Implicit) -> TcpTestSucceeded=False  RemoteAddress=107.180.113.63
+[2025-11-10 18:47:30Z] Port 22 (SFTP) -> TcpTestSucceeded=True  RemoteAddress=107.180.113.63
+[2025-11-10 18:47:30Z] Attempting plain FTP LIST ...
+[2025-11-10 18:47:33Z] Plain FTP LIST succeeded. Sample entries: ., .., .ftpquota
+[2025-11-10 18:47:33Z] Attempting FTPS Explicit (EnableSsl on port 21) ...
+[2025-11-10 18:47:34Z] FTPS Explicit failed: Exception calling "GetResponse" with "0" argument(s): "The remote server returned an error: (504) 504 Command not implemented for that parameter
+."
+[2025-11-10 18:47:34Z] Attempting FTPS Implicit (port 990) ...
+[2025-11-10 18:47:34Z] FTPS Implicit failed: Exception calling "Create" with "1" argument(s): "Invalid URI: The hostname could not be parsed."
+[2025-11-10 18:47:34Z] Attempting SFTP (port 22) via Posh-SSH ...
+[2025-11-10 18:47:34Z] Posh-SSH not installed. Install-Module -Name Posh-SSH -Scope CurrentUser -Force
+[2025-11-10 18:47:34Z] === Diagnostics finished ===
+[2025-11-10 18:47:34Z] Log file path: C:\Users\Dalmia Computers\Downloads\chhama_windows_master\chhama_conn_test_20251110-184514.log

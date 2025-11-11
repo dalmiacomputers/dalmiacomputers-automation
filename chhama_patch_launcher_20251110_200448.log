@@ -1,0 +1,12 @@
+2025-11-10 20:04:49	Starting CHHAMA FTP auto-normalize. Host=107.180.113.63, User=e5khdkcsrpke, Mode=test, LocalPath=C:\Users\Dalmia Computers\Downloads\chhama_windows_master\patch_files
+2025-11-10 20:04:54	Not found or inaccessible: /public_html
+2025-11-10 20:04:59	Not found or inaccessible: /www
+2025-11-10 20:05:04	Not found or inaccessible: /httpdocs
+2025-11-10 20:05:11	Not found or inaccessible: /htdocs
+2025-11-10 20:05:16	Not found or inaccessible: /site/wwwroot
+2025-11-10 20:05:23	Not found or inaccessible: /public
+2025-11-10 20:05:29	Not found or inaccessible: /html
+2025-11-10 20:05:34	Not found or inaccessible: /
+2025-11-10 20:05:34	No standard root detected; attempting root listing...
+2025-11-10 20:05:40	Failed to list root '/'. Error: Exception calling "GetResponse" with "0" argument(s): "The remote server returned an error: (530) Not logged in."
+2025-11-10 20:05:40	ERROR: Could not detect a writable remote webroot. Aborting.

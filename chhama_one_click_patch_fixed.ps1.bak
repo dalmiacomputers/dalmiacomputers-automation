@@ -1,0 +1,386 @@
+<#
+chhama_one_click_patch_fixed.ps1
+Fixed one-click patch for dalmiacomputers.in:
+- Backup remote site via WinSCP (recommended) or plain FTP fallback
+- Generate emergency patch files (css, robots, sitemap, pages, assets)
+- Upload patch files to remote site
+- Verify HTTP(S) response
+- Robust logging; safe variable interpolation
+#>
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+
+#region Setup
+$TS = (Get-Date).ToString("yyyyMMddTHHmmssZ")
+$LogFile = "chhama_patch_$TS.log"
+function Log {
+    param([string]$Text)
+    $line = "[{0}] {1}" -f (Get-Date -Format o), $Text
+    Write-Host $line
+    Add-Content -Path $LogFile -Value $line
+}
+Log "Starting CHHAMA One-Click Patch (fixed) - $TS"
+#endregion
+
+#region Prompt for credentials
+$ftpHost = Read-Host "FTP/FTPS host (e.g. ftp.dalmiacomputers.in)"
+if ([string]::IsNullOrWhiteSpace($ftpHost)) { Write-Error "Host required"; exit 1 }
+$ftpUser = Read-Host "FTP username"
+if ([string]::IsNullOrWhiteSpace($ftpUser)) { Write-Error "User required"; exit 1 }
+$ftpPassSecure = Read-Host "FTP password (will be hidden)" -AsSecureString
+$ftpPass = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($ftpPassSecure))
+$remoteRoot = Read-Host "Remote site path (default: /public_html). Enter / for root"
+if ([string]::IsNullOrWhiteSpace($remoteRoot)) { $remoteRoot = "/public_html" }
+$domain = Read-Host "Public domain for verification (e.g. dalmiacomputers.in)"
+if ([string]::IsNullOrWhiteSpace($domain)) { $domain = $ftpHost }
+$useSecureInput = Read-Host "Use SFTP/FTPS (recommended)? (Y/n)"
+$useSecure = $true
+if ($useSecureInput -match '^(n|N)') { $useSecure = $false }
+
+$BackupDir = Join-Path -Path (Get-Location) -ChildPath "backup_$TS"
+$PatchDir  = Join-Path -Path (Get-Location) -ChildPath "patch_$TS"
+New-Item -Path $BackupDir -ItemType Directory -Force | Out-Null
+New-Item -Path $PatchDir -ItemType Directory -Force | Out-Null
+Log ("BackupDir={0}  PatchDir={1}" -f $BackupDir, $PatchDir)
+#endregion
+
+#region WinSCP detection
+$winscpDllName = "WinSCPnet.dll"
+$winscpDllPath = Join-Path -Path (Get-Location) -ChildPath $winscpDllName
+$hasWinSCP = $false
+if (Test-Path $winscpDllPath) {
+    try {
+        Add-Type -Path $winscpDllPath -ErrorAction Stop
+        $hasWinSCP = $true
+        Log ("Loaded WinSCP .NET assembly from {0}" -f $winscpDllPath)
+    } catch {
+        Log ("Found {0} but failed to load: {1}" -f $winscpDllPath, $_.Exception.Message)
+    }
+} else {
+    # try common install path
+    $candidates = @("$env:ProgramFiles\WinSCP", "$env:ProgramFiles(x86)\WinSCP") | Where-Object { Test-Path $_ }
+    foreach ($c in $candidates) {
+        $maybe = Join-Path $c $winscpDllName
+        if (Test-Path $maybe) {
+            try { Add-Type -Path $maybe -ErrorAction Stop; $hasWinSCP = $true; Log ("Loaded WinSCP .NET assembly from {0}" -f $maybe); break } catch { }
+        }
+    }
+}
+if (-not $hasWinSCP) { Log "WinSCP .NET assembly not found - will attempt plain FTP fallback (may fail for FTPS/SFTP)." }
+#endregion
+
+#region Helper functions
+function Ensure-Dir { param([string]$p) if (-not (Test-Path $p)) { New-Item -Path $p -ItemType Directory -Force | Out-Null } }
+function New-File { param([string]$path,[string]$content) Ensure-Dir (Split-Path $path); Set-Content -Path $path -Value $content -Encoding UTF8; Log ("Wrote {0}" -f $path) }
+#endregion
+
+#region Patch generation
+function Generate-PatchFiles {
+    param([string]$base)
+    Ensure-Dir $base
+    $cssDir = Join-Path $base "css"; Ensure-Dir $cssDir
+    $css = @"
+:root{--primary:#0a4d8c;--dark:#0b0b0b;--muted:#666;--accent:#00a86b}
+*{box-sizing:border-box}html,body{margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;color:var(--dark)}
+.container{max-width:1200px;margin:0 auto;padding:0 16px}header{background:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.06);position:sticky;top:0;z-index:100}
+.header-inner{display:flex;align-items:center;justify-content:space-between;padding:12px 0}.logo img{height:56px}
+nav ul{list-style:none;margin:0;padding:0;display:flex;gap:18px}nav a{text-decoration:none;color:var(--dark);font-weight:600}
+.hero-slider{height:360px;display:flex;align-items:center;justify-content:center;background:#f5f7fb}
+.priority-block{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;padding:24px 0}
+.card{background:#fff;padding:18px;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+footer{background:#0b0b0b;color:#fff;padding:24px 0;margin-top:24px}.footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+@media(max-width:768px){nav ul{display:none}.logo img{height:44px}}
+"@
+    New-File (Join-Path $cssDir "style.css") $css
+
+    New-File (Join-Path $base "robots.txt") "User-agent: *`nDisallow:`nSitemap: https://dalmiacomputers.in/sitemap.xml"
+
+    $sitemap = @"
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://dalmiacomputers.in/</loc><changefreq>daily</changefreq></url>
+  <url><loc>https://dalmiacomputers.in/pages/products/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://dalmiacomputers.in/pages/services/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://dalmiacomputers.in/pages/support/</loc><changefreq>weekly</changefreq></url>
+</urlset>
+"@
+    New-File (Join-Path $base "sitemap.xml") $sitemap
+
+    $header = @"
+<header>
+  <div class='container header-inner'>
+    <div class='logo'><a href='/'><img src='/assets/dc-logo.svg' alt='Dalmia Computers Logo'></a></div>
+    <nav>
+      <ul>
+        <li><a href='/'>Home</a></li>
+        <li><a href='/pages/products/'>Products</a></li>
+        <li><a href='/pages/services/'>Services</a></li>
+        <li><a href='/pages/support/'>Support</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+"@
+    Ensure-Dir (Join-Path $base "snippets")
+    New-File (Join-Path $base "snippets\header.html") $header
+
+    $pages = @("products","services","support","tally","careers","lucky-draw")
+    foreach ($p in $pages) {
+        $pDir = Join-Path $base "pages\$p"; Ensure-Dir $pDir
+        $html = @"
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <title>$($p.ToUpperInvariant()) - Dalmia Computers</title>
+  <meta name='description' content='$p page under construction'>
+  <link rel='canonical' href='https://dalmiacomputers.in/pages/$p/'>
+  <link rel='stylesheet' href='/css/style.css'>
+</head>
+<body>
+  $header
+  <main class='container'>
+    <h1>$($p.ToUpperInvariant())</h1>
+    <p>This page is under construction. Contact 9734290001 for details.</p>
+  </main>
+  <footer></footer>
+</body>
+</html>
+"@
+        New-File (Join-Path $pDir "index.html") $html
+    }
+
+    $assets = Join-Path $base "assets"; Ensure-Dir $assets
+    $svg = @"
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 100'>
+  <rect width='100%' height='100%' fill='#0a4d8c'/>
+  <text x='50%' y='55%' font-family='Verdana' font-size='20' fill='#fff' text-anchor='middle'>Dalmia Computers</text>
+</svg>
+"@
+    New-File (Join-Path $assets "dc-logo.svg") $svg
+    Log "Patch files generated under ${base}"
+}
+#endregion
+
+#region WinSCP helper (if available)
+if ($hasWinSCP) {
+    function New-WinSCPSessionOptions {
+        param($host,$user,$password)
+        $so = New-Object WinSCP.SessionOptions
+        if ($useSecure) {
+            # prefer SFTP; if your host uses FTP/FTPS change this to Ftp and set FtpSecure
+            $so.Protocol = [WinSCP.Protocol]::Sftp
+            $so.HostName = $host
+            $so.UserName = $user
+            $so.Password = $password
+            # leaving fingerprint empty allows connection but may show a warning
+            $so.SshHostKeyFingerprint = ""
+        } else {
+            $so.Protocol = [WinSCP.Protocol]::Ftp
+            $so.HostName = $host
+            $so.UserName = $user
+            $so.Password = $password
+            $so.FtpSecure = [WinSCP.FtpSecure]::Explicit
+            $so.TlsHostCertificateFingerprint = ""
+        }
+        return $so
+    }
+}
+#endregion
+
+#region Plain FTP fallback functions
+function Ftp-DownloadRecursive {
+    param($host,$user,$pass,$remotePath,$localPath)
+    Ensure-Dir $localPath
+    Log ("Starting plain FTP download from {0}:{1} (non-TLS)." -f $host, $remotePath)
+    $webclient = New-Object System.Net.WebClient
+    $webclient.Credentials = New-Object System.Net.NetworkCredential($user,$pass)
+    try {
+        $uriBase = "ftp://{0}{1}" -f $host, $remotePath.TrimEnd('/')
+        $req = [System.Net.FtpWebRequest]::Create($uriBase)
+        $req.Method = [System.Net.WebRequestMethods+Ftp]::ListDirectory
+        $req.Credentials = $webclient.Credentials
+        $resp = $req.GetResponse()
+        $sr = New-Object System.IO.StreamReader($resp.GetResponseStream())
+        $entries = @()
+        while(-not $sr.EndOfStream) { $entries += $sr.ReadLine() }
+        $sr.Close(); $resp.Close()
+        foreach ($e in $entries) {
+            if ([string]::IsNullOrWhiteSpace($e)) { continue }
+            $remoteFile = "{0}/{1}" -f $remotePath.TrimEnd('/'), $e
+            $localFile = Join-Path $localPath $e
+            try {
+                $fileUri = "ftp://{0}{1}" -f $host, $remoteFile
+                $webclient.DownloadFile($fileUri, $localFile)
+                Log ("Downloaded {0}" -f $remoteFile)
+            } catch {
+                Ensure-Dir $localFile
+                Ftp-DownloadRecursive -host $host -user $user -pass $pass -remotePath $remoteFile -localPath $localFile
+            }
+        }
+    } catch {
+        Log ("Plain FTP download failed: {0}" -f $_.Exception.Message)
+        throw $_
+    } finally {
+        $webclient.Dispose()
+    }
+}
+
+function Ftp-UploadFile {
+    param($host,$user,$pass,$localFile,$remoteFile)
+    $uri = "ftp://{0}{1}" -f $host, $remoteFile
+    $req = [System.Net.FtpWebRequest]::Create($uri)
+    $req.Method = [System.Net.WebRequestMethods+Ftp]::UploadFile
+    $req.Credentials = New-Object System.Net.NetworkCredential($user,$pass)
+    $bytes = [System.IO.File]::ReadAllBytes($localFile)
+    $req.ContentLength = $bytes.Length
+    $stream = $req.GetRequestStream()
+    $stream.Write($bytes,0,$bytes.Length)
+    $stream.Close()
+    $resp = $req.GetResponse()
+    $resp.Close()
+    Log ("Uploaded {0} -> {1}" -f $localFile, $remoteFile)
+}
+#endregion
+
+#region Main flow
+try {
+    # Step 1: Backup (WinSCP preferred)
+    if ($hasWinSCP -and $useSecure) {
+        Log ("Using WinSCP (secure) for backup to {0}" -f $BackupDir)
+        $so = New-WinSCPSessionOptions -host $ftpHost -user $ftpUser -password $ftpPass
+        $session = New-Object WinSCP.Session
+        try {
+            $session.Open($so)
+            Ensure-Dir $BackupDir
+            $transferOptions = New-Object WinSCP.TransferOptions
+            $transferOptions.TransferMode = [WinSCP.TransferMode]::Binary
+            $session.GetFiles($remoteRoot + "/*", $BackupDir, $True, $transferOptions).Check()
+            Log ("WinSCP backup downloaded to {0}" -f $BackupDir)
+        } catch {
+            Log ("WinSCP backup error: {0}" -f $_.Exception.Message)
+            throw $_
+        } finally {
+            $session.Dispose()
+        }
+    } elseif ($hasWinSCP -and -not $useSecure) {
+        Log "Using WinSCP (FTP explicit) for backup."
+        $so = New-WinSCPSessionOptions -host $ftpHost -user $ftpUser -password $ftpPass
+        $session = New-Object WinSCP.Session
+        try {
+            $session.Open($so)
+            Ensure-Dir $BackupDir
+            $session.GetFiles($remoteRoot + "/*", $BackupDir, $True).Check()
+            Log ("Backup downloaded to {0}" -f $BackupDir)
+        } catch {
+            Log ("WinSCP backup error: {0}" -f $_.Exception.Message)
+            throw $_
+        } finally {
+            $session.Dispose()
+        }
+    } else {
+        Log "WinSCP not present or skipped. Falling back to plain FTP (no TLS)."
+        Ftp-DownloadRecursive -host $ftpHost -user $ftpUser -pass $ftpPass -remotePath $remoteRoot -localPath $BackupDir
+        Log ("FTP backup downloaded to {0}" -f $BackupDir)
+    }
+
+    # zip backup
+    $zipPath = "$BackupDir.zip"
+    if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    [System.IO.Compression.ZipFile]::CreateFromDirectory($BackupDir, $zipPath)
+    Log ("Backup zipped to {0}" -f $zipPath)
+
+    # Step 2: generate patch files
+    Generate-PatchFiles -base $PatchDir
+
+    # Step 3: upload patch files
+    if ($hasWinSCP -and $useSecure) {
+        Log "Uploading patch via WinSCP (secure)."
+        $so = New-WinSCPSessionOptions -host $ftpHost -user $ftpUser -password $ftpPass
+        $session = New-Object WinSCP.Session
+        try {
+            $session.Open($so)
+            $session.PutFiles((Join-Path $PatchDir "css\*"), (Join-Path $remoteRoot "css")).Check()
+            $session.PutFiles((Join-Path $PatchDir "assets\*"), (Join-Path $remoteRoot "assets")).Check()
+            $session.PutFiles((Join-Path $PatchDir "pages\*"), (Join-Path $remoteRoot "pages")).Check()
+            foreach ($file in @("robots.txt","sitemap.xml")) {
+                $local = Join-Path $PatchDir $file
+                if (Test-Path $local) {
+                    $session.PutFiles($local, (Join-Path $remoteRoot $file)).Check()
+                    Log ("Uploaded {0} to {1}/{2}" -f $file, $remoteRoot.TrimEnd('/'), $file)
+                }
+            }
+            Log "Patch upload completed (WinSCP)."
+        } catch {
+            Log ("WinSCP upload error: {0}" -f $_.Exception.Message)
+            throw $_
+        } finally {
+            $session.Dispose()
+        }
+    } else {
+        Log "Uploading patch via plain FTP (non-TLS)."
+        $itemsToUpload = @()
+        # top-level files
+        foreach ($f in @("robots.txt","sitemap.xml")) {
+            $local = Join-Path $PatchDir $f
+            if (Test-Path $local) { $itemsToUpload += @{ Local=$local; Remote="$remoteRoot/$f" } }
+        }
+        # css
+        Get-ChildItem -Path (Join-Path $PatchDir "css") -File -Recurse | ForEach-Object {
+            $rel = $_.FullName.Substring((Join-Path $PatchDir "css").Length).TrimStart('\','/')
+            $remote = "$remoteRoot/css/$rel" -replace '\\','/'
+            $itemsToUpload += @{ Local=$_.FullName; Remote=$remote }
+        }
+        # assets
+        Get-ChildItem -Path (Join-Path $PatchDir "assets") -File -Recurse | ForEach-Object {
+            $rel = $_.FullName.Substring((Join-Path $PatchDir "assets").Length).TrimStart('\','/')
+            $remote = "$remoteRoot/assets/$rel" -replace '\\','/'
+            $itemsToUpload += @{ Local=$_.FullName; Remote=$remote }
+        }
+        # pages
+        Get-ChildItem -Path (Join-Path $PatchDir "pages") -File -Recurse | ForEach-Object {
+            $rel = $_.FullName.Substring((Join-Path $PatchDir "pages").Length).TrimStart('\','/')
+            $remote = "$remoteRoot/pages/$rel" -replace '\\','/'
+            $itemsToUpload += @{ Local=$_.FullName; Remote=$remote }
+        }
+        foreach ($it in $itemsToUpload) {
+            try {
+                Ftp-UploadFile -host $ftpHost -user $ftpUser -pass $ftpPass -localFile $it.Local -remoteFile $it.Remote
+            } catch {
+                Log ("FTP upload failed for {0}: {1}" -f $it.Local, $_.Exception.Message)
+            }
+        }
+        Log "Plain FTP upload attempts finished."
+    }
+
+    # Step 4: verify HTTP(S)
+    try {
+        Log ("Verifying https://{0} ..." -f $domain)
+        $resp = Invoke-WebRequest -Uri ("https://{0}" -f $domain) -UseBasicParsing -TimeoutSec 15 -ErrorAction Stop
+        Log ("HTTPS status: {0}  Size: {1}" -f $resp.StatusCode, $resp.RawContentLength)
+    } catch {
+        Log ("HTTPS verify failed: {0}  Trying HTTP..." -f $_.Exception.Message)
+        try {
+            $resp2 = Invoke-WebRequest -Uri ("http://{0}" -f $domain) -UseBasicParsing -TimeoutSec 10 -ErrorAction Stop
+            Log ("HTTP status: {0}  Size: {1}" -f $resp2.StatusCode, $resp2.RawContentLength)
+        } catch {
+            Log ("HTTP verify failed: {0}" -f $_.Exception.Message)
+        }
+    }
+
+    Log "One-click patch finished. Log: $LogFile   Backup zip: $zipPath"
+    Write-Host ""
+    Write-Host "--- SUMMARY ---"
+    Write-Host ("Backup folder: {0}   (zip: {1})" -f $BackupDir, $zipPath)
+    Write-Host ("Patch folder: {0}" -f $PatchDir)
+    Write-Host ("Log file: {0}" -f $LogFile)
+    Write-Host "If anything is wrong, restore from the backup folder or upload backup zip via GoDaddy File Manager."
+}
+catch {
+    Log ("ERROR: {0}" -f $_.Exception.Message)
+    throw
+}
+#endregion
+

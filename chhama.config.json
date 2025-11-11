@@ -1,0 +1,14 @@
+{
+  "domain": "dalmiacomputers.in",
+  "deploy_dir": "/public_html",
+  "ftp": {
+    "host": "ftp.dalmiacomputers.in",
+    "user": "__FTP_USER__",
+    "pass": "__FTP_PASS__"
+  },
+  "ssh": {
+    "host": "",
+    "user": "",
+    "key_path": ""
+  }
+}

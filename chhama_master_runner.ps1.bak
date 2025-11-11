@@ -1,0 +1,175 @@
+<#
+chhama_master_runner.ps1
+Master helper to auto-fix and run chhama one-click scripts (Windows).
+
+Usage:
+  1) Put this file in the same folder as your chhama_*.ps1 scripts.
+  2) Right-click -> Run with PowerShell, or run from an elevated/non-elevated PowerShell:
+       pwsh -NoProfile -ExecutionPolicy Bypass -File .\chhama_master_runner.ps1
+     or
+       powershell -NoProfile -ExecutionPolicy Bypass -File .\chhama_master_runner.ps1
+
+What it does:
+ - Finds the first chhama*.ps1 file in the folder.
+ - Creates a backup copy (timestamped).
+ - Applies safe fixes for common PowerShell parsing errors (replaces $a:$b with ${a}:${b}).
+ - Writes a fixed script named chhama_one_click_patch_fixed.ps1.
+ - Runs the fixed script and logs console output to chhama_runlog_<TS>.txt.
+ - Keeps the console visible and prints locations of backup/logs.
+#>
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+
+function Info($msg){ Write-Host "[INFO] $msg" -ForegroundColor Cyan }
+function Warn($msg){ Write-Host "[WARN] $msg" -ForegroundColor Yellow }
+function Err($msg){ Write-Host "[ERROR] $msg" -ForegroundColor Red }
+
+# Timestamp helper
+$TS = (Get-Date).ToString("yyyyMMdd-HHmmss")
+$pwdPath = (Get-Location).ProviderPath
+
+Info "Starting CHHAMA Master Runner - $TS"
+Info "Working folder: $pwdPath"
+
+# Find the first chhama*.ps1 (but avoid the master runner itself)
+$psCandidates = @(Get-ChildItem -Path . -Filter "chhama*.ps1" -File | Where-Object { $psCandidates = Get-ChildItem -Path . -Filter "chhama*.ps1" -File | Where-Object { $_.Name -ne 'chhama_master_runner.ps1' } | Sort-Object Name.Name -ne 'chhama_master_runner.ps1' } | Sort-Object Name)
+if ($psCandidates.Count -eq 0) {
+    Err "No 'chhama*.ps1' file found in this folder. Put your chhama script here and re-run."
+    exit 2
+}
+$origFile = $psCandidates[0].FullName
+Info "Found script: $($psCandidates[0].Name)"
+
+# Make a backup copy
+$backupName = "$($psCandidates[0].BaseName).backup.$TS.ps1"
+$backupPath = Join-Path $pwdPath $backupName
+Copy-Item -Path $origFile -Destination $backupPath -Force
+Info "Backed up original to: $backupName"
+
+# Read content
+$content = Get-Content -Raw -Path $origFile -Encoding UTF8
+
+# ------------- Auto-fixes -------------
+# 1) Fix "$var:$var2" patterns that break PowerShell parsing (example: $host:$remotePath)
+# Replace occurrences of $var:$var2 with ${var}:${var2}
+# Regex: look for \$<ident>:\$<ident>
+$pattern = '\$([A-Za-z_][A-Za-z0-9_]*)\: \$?(\$([A-Za-z_][A-Za-z0-9_]*))'
+# The above pattern handles "$a:$b" or "$a: $b" (rare). We'll also apply a simpler pattern for "$a:$b" without extra space.
+$contentFixed = $content -replace '\$([A-Za-z_][A-Za-z0-9_]*)\:?\$([A-Za-z_][A-Za-z0-9_]*)', { param($m) 
+    # m.Groups[1] is var1, m.Groups[2] is var2
+    $v1 = $m.Groups[1].Value
+    $v2 = $m.Groups[2].Value
+    return '${' + $v1 + '}:' + '${' + $v2 + '}'
+}
+
+# 2) Additionally fix occurrences of "$var:someText" (rare) where colon follows var and next chars are not a $var.
+# Example problematic: "Error at $line: some text" -- do NOT change such occurrences.
+# So only replace when pattern is $var: followed immediately by $var2 (handled above).
+# We will not run any further global replacements to avoid breaking intended strings.
+
+# Compare and report
+if ($contentFixed -ne $content) {
+    Info "Auto-fix changes detected. Writing fixed script."
+} else {
+    Info "No auto-fix patterns detected; original script likely fine."
+}
+
+# Write fixed file (do not overwrite original; create fixed name)
+$fixedName = "chhama_one_click_patch_fixed.ps1"
+$fixedPath = Join-Path $pwdPath $fixedName
+Set-Content -Path $fixedPath -Value $contentFixed -Encoding UTF8 -Force
+Info "Fixed script written to: $fixedName"
+
+# Make backup and fixed files readable
+Get-Item $backupPath, $fixedPath | ForEach-Object { $_.Attributes = 'Normal' }
+
+# ------------- Execution -------------
+# Compose log file name
+$runLog = "chhama_runlog_$TS.txt"
+$runErr = "chhama_runerr_$TS.txt"
+Info "Preparing to run fixed script and capture output to: $runLog"
+
+# Choose pwsh if available, else fallback to powershell
+$pwshPath = (Get-Command pwsh.exe -ErrorAction SilentlyContinue).Path
+if ($null -ne $pwshPath) {
+    $psExe = $pwshPath
+    Info "Using PowerShell 7: $psExe"
+} else {
+    $psExe = (Get-Command powershell.exe -ErrorAction SilentlyContinue).Path
+    if ($null -eq $psExe) {
+        Err "No PowerShell executable found (neither pwsh nor powershell). Aborting."
+        exit 3
+    }
+    Info "Using Windows PowerShell: $psExe"
+}
+
+# Build args safely
+$argList = @(
+    "-NoProfile",
+    "-ExecutionPolicy", "Bypass",
+    "-File", $fixedPath
+)
+
+# Start process and capture output (works in PowerShell 5+ and pwsh)
+# Use Start-Process with redirection for robust capture
+$startInfo = @{
+    FilePath = $psExe
+    ArgumentList = $argList
+    RedirectStandardOutput = $true
+    RedirectStandardError  = $true
+    UseShellExecute = $false
+    CreateNoWindow = $false
+}
+
+Info "Starting process..."
+$proc = Start-Process @startInfo -PassThru
+
+# Read output streams and write to files live
+$outStream = [System.IO.StreamWriter]::new((Join-Path $pwdPath $runLog), $false, [System.Text.Encoding]::UTF8)
+$errStream = [System.IO.StreamWriter]::new((Join-Path $pwdPath $runErr), $false, [System.Text.Encoding]::UTF8)
+
+try {
+    $stdOut = $proc.StandardOutput
+    $stdErr = $proc.StandardError
+
+    # Poll until process exits, streaming output lines to console and files
+    while (-not $proc.HasExited) {
+        while (-not $stdOut.EndOfStream) {
+            $line = $stdOut.ReadLine()
+            if ($null -ne $line) { Write-Host $line; $outStream.WriteLine($line); $outStream.Flush() }
+        }
+        while (-not $stdErr.EndOfStream) {
+            $line2 = $stdErr.ReadLine()
+            if ($null -ne $line2) { Write-Host $line2 -ForegroundColor Red; $errStream.WriteLine($line2); $errStream.Flush() }
+        }
+        Start-Sleep -Milliseconds 150
+    }
+
+    # after exit, drain remaining
+    while (-not $stdOut.EndOfStream) { $line = $stdOut.ReadLine(); Write-Host $line; $outStream.WriteLine($line) }
+    while (-not $stdErr.EndOfStream) { $line2 = $stdErr.ReadLine(); Write-Host $line2 -ForegroundColor Red; $errStream.WriteLine($line2) }
+
+    $exitCode = $proc.ExitCode
+    Info "Child process exited with code $exitCode"
+} finally {
+    $outStream.Close()
+    $errStream.Close()
+    if ($proc -and -not $proc.HasExited) { $proc.Kill() }
+}
+
+Info "Run complete. Logs:"
+Write-Host "  stdout: $runLog"
+Write-Host "  stderr: $runErr"
+Write-Host "  backup: $backupName"
+Write-Host "  fixed : $fixedName"
+Write-Host ""
+Write-Host "If anything looks wrong, you can restore the backup file by renaming it back to the original PS1."
+Write-Host "Paste the first few error lines here if you want me to fix the script further."
+
+# Keep console open when run by double-click
+if ($Host.Name -eq 'ConsoleHost') {
+    Write-Host ""
+    Write-Host "Press Enter to close this window..."
+    [void][System.Console]::ReadLine()
+}

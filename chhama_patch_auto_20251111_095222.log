@@ -1,0 +1,11 @@
+2025-11-11 09:53:23	Launcher start. Server=107.180.113.63, User=e5khdkcsrpke, Mode=test, LocalPath=C:\Users\Dalmia Computers\Downloads\chhama_windows_master\patch_files, WinSCP DLL=C:\Program Files (x86)\WinSCP\WinSCPnet.dll
+2025-11-11 09:53:23	Local patch folder exists: C:\Users\Dalmia Computers\Downloads\chhama_windows_master\patch_files
+2025-11-11 09:53:23	WinSCP .NET loaded from C:\Program Files (x86)\WinSCP\WinSCPnet.dll
+2025-11-11 09:53:23	SFTP ERROR: System.Management.Automation.MethodInvocationException - Exception calling "Open" with "1" argument(s): "Method not found: 'Void System.Threading.EventWaitHandle..ctor(Boolean, System.Threading.EventResetMode, System.String, Boolean ByRef, System.Security.AccessControl.EventWaitHandleSecurity)'."
+2025-11-11 09:53:23	Falling back to FTP (.NET) due to SFTP error.
+2025-11-11 09:53:23	Starting FTP fallback (.NET). Attempting plain FTP (port 21).
+2025-11-11 09:53:31	FTP: detected remote root /public_html
+2025-11-11 09:53:31	FTP test mode target: /public_html/chhama_patch_test_20251111_095331
+2025-11-11 09:53:33	FTP: created remote test folder /public_html/chhama_patch_test_20251111_095331
+2025-11-11 09:53:33	FTP: Found 0 files to upload from C:\Users\Dalmia Computers\Downloads\chhama_windows_master\patch_files
+2025-11-11 09:53:33	FTP: Upload step finished. Remote target: /public_html/chhama_patch_test_20251111_095331

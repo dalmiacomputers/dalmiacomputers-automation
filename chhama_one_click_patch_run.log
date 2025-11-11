@@ -1,0 +1,12 @@
+[2025-11-10 17:37:03Z] BackupDir=C:\Users\Dalmia Computers\Downloads\chhama_windows_master\backup_20251110T173703Z PatchDir=C:\Users\Dalmia Computers\Downloads\chhama_windows_master\patch_20251110T173703Z
+[2025-11-10 17:37:03Z] Starting FTP download: ftp.dalmiacomputers.inpublic_html -> C:\Users\Dalmia Computers\Downloads\chhama_windows_master\backup_20251110T173703Z
+[2025-11-10 17:37:03Z] FTP download failed: Exception calling "GetResponse" with "0" argument(s): "The remote name could not be resolved"
+[2025-11-10 17:37:03Z] Download stage failed: Exception calling "GetResponse" with "0" argument(s): "The remote name could not be resolved"
+[2025-11-10 17:37:03Z] Backup zipped to C:\Users\Dalmia Computers\Downloads\chhama_windows_master\backup_20251110T173703Z.zip
+[2025-11-10 17:37:03Z] Patch files created in C:\Users\Dalmia Computers\Downloads\chhama_windows_master\patch_20251110T173703Z
+[2025-11-10 18:01:45Z] BackupDir=C:\Users\Dalmia Computers\Downloads\chhama_windows_master\backup_20251110T180145Z PatchDir=C:\Users\Dalmia Computers\Downloads\chhama_windows_master\patch_20251110T180145Z
+[2025-11-10 18:01:45Z] Starting FTP download: ftp.dalmiacomputers.inpublic_html -> C:\Users\Dalmia Computers\Downloads\chhama_windows_master\backup_20251110T180145Z
+[2025-11-10 18:01:46Z] FTP download failed: Exception calling "GetResponse" with "0" argument(s): "The remote name could not be resolved"
+[2025-11-10 18:01:46Z] Download stage failed: Exception calling "GetResponse" with "0" argument(s): "The remote name could not be resolved"
+[2025-11-10 18:01:46Z] Backup zipped to C:\Users\Dalmia Computers\Downloads\chhama_windows_master\backup_20251110T180145Z.zip
+[2025-11-10 18:01:46Z] Patch files created in C:\Users\Dalmia Computers\Downloads\chhama_windows_master\patch_20251110T180145Z

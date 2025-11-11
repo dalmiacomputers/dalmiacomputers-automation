@@ -1,0 +1,25 @@
+2025-11-11 10:02:42	=== CHHAMA FULL DIAGNOSTIC START ===
+2025-11-11 10:03:31	STEP: DNS + Port checks for 107.180.113.63
+2025-11-11 10:03:31	DNS: Resolved -> 
+2025-11-11 10:03:32	PORT 21: Open/Reachable
+2025-11-11 10:03:32	PORT 22: Open/Reachable
+2025-11-11 10:03:32	PORT 80: Open/Reachable
+2025-11-11 10:03:32	PORT 443: Open/Reachable
+2025-11-11 10:03:32	Created local test file: C:\Users\Dalmia Computers\Downloads\chhama_windows_master\diag_temp\chhama_diag_test_20251111_100332.txt
+2025-11-11 10:03:32	WinSCP .NET found: C:\Program Files (x86)\WinSCP\WinSCPnet.dll -> Attempting SFTP connect
+2025-11-11 10:03:32	SFTP error: Exception calling "Open" with "1" argument(s): "Method not found: 'Void System.Threading.EventWaitHandle..ctor(Boolean, System.Threading.EventResetMode, System.String, Boolean ByRef, System.Security.AccessControl.EventWaitHandleSecurity)'.". Will fallback to FTP.
+2025-11-11 10:03:32	STEP: Trying FTP (.NET) with provided credentials
+2025-11-11 10:03:40	FTP: not accessible -> /public_html (Exception calling "GetResponse" with "0" argument(s): "The remote server returned an error: (550) File unavailable (e.g., file not found, no access).")
+2025-11-11 10:03:43	FTP: not accessible -> /www (Exception calling "GetResponse" with "0" argument(s): "The remote server returned an error: (550) File unavailable (e.g., file not found, no access).")
+2025-11-11 10:03:45	FTP: not accessible -> /httpdocs (Exception calling "GetResponse" with "0" argument(s): "The remote server returned an error: (550) File unavailable (e.g., file not found, no access).")
+2025-11-11 10:03:48	FTP: not accessible -> /htdocs (Exception calling "GetResponse" with "0" argument(s): "The remote server returned an error: (550) File unavailable (e.g., file not found, no access).")
+2025-11-11 10:03:50	FTP: not accessible -> /site/wwwroot (Exception calling "GetResponse" with "0" argument(s): "The remote server returned an error: (550) File unavailable (e.g., file not found, no access).")
+2025-11-11 10:03:52	FTP: not accessible -> /public (Exception calling "GetResponse" with "0" argument(s): "The remote server returned an error: (550) File unavailable (e.g., file not found, no access).")
+2025-11-11 10:03:55	FTP: not accessible -> /html (Exception calling "GetResponse" with "0" argument(s): "The remote server returned an error: (550) File unavailable (e.g., file not found, no access).")
+2025-11-11 10:03:58	FTP: root accessible -> /
+2025-11-11 10:04:00	FTP: Created remote test folder /chhama_diag_test_20251111_100332
+2025-11-11 10:04:03	FTP: Uploaded test file to /chhama_diag_test_20251111_100332/chhama_diag_test_20251111_100332.txt
+2025-11-11 10:04:03	Attempting HTTP GET to http://107.180.113.63/chhama_diag_test_20251111_100332/chhama_diag_test_20251111_100332.txt
+2025-11-11 10:04:05	HTTP check failed: Response status code does not indicate success: 404 (Not Found).
+2025-11-11 10:04:05	=== DIAGNOSTIC COMPLETE ===
+2025-11-11 10:04:05	Log saved at: C:\Users\Dalmia Computers\Downloads\chhama_windows_master\chhama_full_diag_20251111_100242.log

@@ -1,0 +1,16 @@
+﻿{
+    "timestamp":  "20251110-140329",
+    "git":  "git version 2.51.2.windows.1\r\n",
+    "ssh":  "ERROR: Hi dalmiacomputers! You\u0027ve successfully authenticated, but GitHub does not provide shell access.",
+    "node":  "v24.11.0\r\n",
+    "npm":  "11.6.1\r\n",
+    "python":  "Python 3.14.0\r\n",
+    "pip":  "pip 25.2 from C:\\Python314\\Lib\\site-packages\\pip (python 3.14)\r\n\r\n",
+    "dns":  "ERROR: Non-authoritative answer:",
+    "curl":  "\r\n\r\nStatusCode        : 200\r\nStatusDescription : OK\r\nContent           : \r\nRawContent        : HTTP/1.1 200 OK\r\n                    Upgrade: h2,h2c\r\n                    Connection: Upgrade, Keep-Alive\r\n                    Vary: Accept-Encoding\r\n                    X-Content-Type-Options: nosniff\r\n                    X-Frame-Options: SAMEORIGIN\r\n                    Referrer-Policy: strict-origin-when-cross-origin...\r\nForms             : \r\nHeaders           : {[Upgrade, h2,h2c], [Connection, Upgrade, Keep-Alive], [Vary, Accept-Encoding], \r\n                    [X-Content-Type-Options, nosniff]...}\r\nImages            : {}\r\nInputFields       : {}\r\nLinks             : {}\r\nParsedHtml        : \r\nRawContentLength  : 0\r\n\r\n\r\n\r\n",
+    "ports":  {
+                  "80":  "closed",
+                  "3000":  "closed",
+                  "443":  "closed"
+              }
+}
