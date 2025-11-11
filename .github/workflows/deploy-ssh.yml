@@ -37,8 +37,9 @@ jobs:
           script: |
             set -e
             cd /home/${{ secrets.SSH_USER }}/chhama_deploy_tmp/
-tar --warning=no-file-changed --ignore-failed-read -czf site_package.tar.gz --exclude .git --exclude node_modules --exclude-from=deploy-exclude.txt .
+git archive -o site_package.tar.gz --format=tar.gz HEAD
             bash /home/${{ secrets.SSH_USER }}/chhama_deploy_tmp/scripts/server_deploy.sh
+
 
 
 
