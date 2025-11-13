@@ -21,3 +21,4 @@ Secrets to add for SSH option:
 
 To set secrets with GitHub CLI (example):
 gh secret set FTP_PASSWORD --body "<value>"
+ci trigger 2025-11-13T12:44:06.9797513+05:30
