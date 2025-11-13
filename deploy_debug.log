@@ -75,3 +75,97 @@ Set-Content: Cannot bind argument to parameter 'Path' because it is null.
 PS C:\dalmiacomputers-automation>   Write-Host "Wrote theme CSS to $targetCss" -ForegroundColor Green
 Wrote theme CSS to
 PS C:\dalmiacomputers-automation>   # 4. Git add/commit/push (only if changes present)
+PS C:\dalmiacomputers-automation>   Write-Host "`n-- git add/commit/push check --" -ForegroundColor Yellow
+
+-- git add/commit/push check --
+PS C:\dalmiacomputers-automation>   & git add -A
+
+PS C:\dalmiacomputers-automation>   $status = & git status --porcelain
+PS C:\dalmiacomputers-automation>   if ($status) {
+    Write-Host "Changes found; committing..." -ForegroundColor Yellow
+    & git commit -m "chore: auto-update theme + fix .gitmodules (diagnostic run)" || Write-Host "git commit returned non-zero" -ForegroundColor Red
+    Write-Host "Pushing to origin/main..." -ForegroundColor Yellow
+    & git push origin main
+    Write-Host "Push attempted. Check output above for success/failure." -ForegroundColor Green
+  } else {
+    Write-Host "No changes to commit." -ForegroundColor Cyan
+  }
+Changes found; committing...
+
+Pushing to origin/main...
+
+Push attempted. Check output above for success/failure.
+PS C:\dalmiacomputers-automation>   Write-Host "`n== repair_and_theme finished successfully (script end) ==" -ForegroundColor Cyan
+
+== repair_and_theme finished successfully (script end) ==
+PS C:\dalmiacomputers-automation> } catch {
+  Write-Host "`n!!! ERROR in repair_and_theme.ps1 !!!" -ForegroundColor Red
+  Write-Host $_.Exception.Message -ForegroundColor Red
+  Write-Host $_.Exception.StackTrace -ForegroundColor Red
+}
+At line:1 char:1
++ } catch {
++ ~
+Unexpected token '}' in expression or statement.
+ParserError: 
+Line |
+   1 |  } catch {
+     |  ~
+     | Unexpected token '}' in expression or statement.
+
+PS C:\dalmiacomputers-automation> # SAFE: fix unterminated-paste problems, write theme file, commit & push
+PS C:\dalmiacomputers-automation> # Run from anywhere — this script uses absolute repo path.
+PS C:\dalmiacomputers-automation> $ErrorActionPreference = 'Stop'
+PS C:\dalmiacomputers-automation> $repo = "C:\dalmiacomputers-automation"
+PS C:\dalmiacomputers-automation> if (-not (Test-Path $repo)) { Write-Host "Repo folder not found: $repo" -ForegroundColor Red; exit 1 }
+PS C:\dalmiacomputers-automation> Set-Location $repo
+PS C:\dalmiacomputers-automation> Write-Host "Working in: $repo" -ForegroundColor Cyan
+Working in: C:\dalmiacomputers-automation
+PS C:\dalmiacomputers-automation> # 1) If interactive shell was mid-here-string, cancel any incomplete input (safety)
+PS C:\dalmiacomputers-automation> try { [Console]::TreatControlCAsInput = $false } catch {}
+PS C:\dalmiacomputers-automation> # 2) Ensure public_html/assets exists
+PS C:\dalmiacomputers-automation> $assets = Join-Path $repo "public_html\assets"
+PS C:\dalmiacomputers-automation> if (-not (Test-Path $assets)) {
+  New-Item -Path $assets -ItemType Directory -Force | Out-Null
+  Write-Host "Created directory: $assets" -ForegroundColor Green
+} else {
+  Write-Host "Assets directory exists: $assets" -ForegroundColor Cyan
+}
+Assets directory exists: C:\dalmiacomputers-automation\public_html\assets
+PS C:\dalmiacomputers-automation> # 3) Write Apple-style white + blue + gold theme to a known file
+PS C:\dalmiacomputers-automation> $targetCss = Join-Path $assets "royal_unified.css"
+PS C:\dalmiacomputers-automation> $cssContent = @'
+/* Royal — Apple-style white base, black + blue accents, gold highlights */
+:root{
+  --bg:#ffffff; --panel:#fbfbfd; --txt:#0b0b0b; --muted:#6b7280;
+  --accent:#0b66ff; --gold:#d4af37; --card:#f3f6f9; --radius:12px;
+}
+body{
+  margin:0; font-family:Inter,"Segoe UI",Roboto,system-ui,-apple-system;
+  background: linear-gradient(180deg,var(--bg),#f6f7fa); color:var(--txt);
+  -webkit-font-smoothing:antialiased;
+}
+.container{max-width:1200px;margin:0 auto;padding:28px}
+.site-header{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+.site-header .logo{height:52px}
+.hero--responsive{position:relative;min-height:60vh;display:grid;align-items:center;overflow:hidden;background:linear-gradient(180deg,#fbfcfe,#f7f9fb)}
+.hero__img{width:100%;height:100%;object-fit:cover;display:block;filter:brightness(.98) contrast(1.02);}
+.hero__overlay{position:absolute;left:clamp(12px,4vw,48px);bottom:clamp(12px,4vh,72px);max-width:680px;background:linear-gradient(180deg,rgba(255,255,255,0.95),rgba(250,250,252,0.95));border-radius:var(--radius);padding:20px;color:var(--txt);box-shadow:0 10px 30px rgba(13,20,30,0.06);backdrop-filter:blur(6px);}
+.hero__overlay .logo{display:inline-block;margin-bottom:8px}
+.hero__overlay h1{font-size:clamp(26px,4vw,48px);margin:6px 0;color:#071429}
+.hero__overlay .tagline{margin:6px 0;color:var(--muted)}
+a.btn{display:inline-block;padding:12px 18px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#2fb3ff);color:white;text-decoration:none;font-weight:700;box-shadow:0 6px 18px rgba(11,102,255,0.12)}
+.card{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 6px 18px rgba(10,12,16,0.03)}
+.premium-badge{display:inline-block;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg,var(--gold),#ffd36b);color:#081018;font-weight:700;font-size:13px}
+.footer{padding:28px 0;color:var(--muted)}
+@media (max-width:719px){ .hero__overlay{left:12px;right:12px;bottom:12px;max-width:calc(100% - 24px);padding:12px} }
+'@
+PS C:\dalmiacomputers-automation> # Write file (overwrite safely)
+PS C:\dalmiacomputers-automation> Set-Content -Path $targetCss -Value $cssContent -Encoding UTF8 -Force
+PS C:\dalmiacomputers-automation> Write-Host "Wrote theme CSS to: $targetCss" -ForegroundColor Green
+Wrote theme CSS to: C:\dalmiacomputers-automation\public_html\assets\royal_unified.css
+PS C:\dalmiacomputers-automation> # 4) Git add/commit/push - only if changes present
+PS C:\dalmiacomputers-automation> & git --version
+
+PS C:\dalmiacomputers-automation> & git status --porcelain > $null
+PS C:\dalmiacomputers-automation> $changes = & git status --porcelain
