@@ -1,0 +1,77 @@
+**********************
+PowerShell transcript start
+Start time: 20251113191539
+Username: DALMIA\Dalmia Computers
+RunAs User: DALMIA\Dalmia Computers
+Configuration Name: 
+Machine: DALMIA (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll -NoExit -RemoveWorkingDirectoryTrailingCharacter -WorkingDirectory C:\dalmiacomputers-automation! -Command $host.UI.RawUI.WindowTitle = 'PowerShell 7 (x64)'
+Process ID: 35108
+PSVersion: 7.5.4
+PSEdition: Core
+GitCommitId: 7.5.4
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Transcript started, output file is C:\dalmiacomputers-automation\deploy_debug.log
+PS C:\dalmiacomputers-automation> Write-Host "`n[DIAG] Starting safe repair+theme runner at $(Get-Date)`n" -ForegroundColor Cyan
+
+[DIAG] Starting safe repair+theme runner at 11/13/2025 19:15:39
+PS C:\dalmiacomputers-automation> $scriptPath = Join-Path (Get-Location) "repair_and_theme.ps1"
+PS C:\dalmiacomputers-automation> $scriptContent = @'
+# repair_and_theme.ps1
+# Defensive version — logs errors and never exits the host abruptly.
+
+try {
+  Write-Host "== repair_and_theme: starting ==" -ForegroundColor Cyan
+
+  # 1. show git status and branch info
+  Write-Host "`n-- git info --" -ForegroundColor Yellow
+  git --version
+  git status --porcelain
+  git rev-parse --abbrev-ref HEAD
+
+  # 2. backup and inspect .gitmodules
+  $gm = Join-Path (Get-Location) ".gitmodules"
+  if (Test-Path $gm) {
+    Write-Host "Found .gitmodules; showing contents:" -ForegroundColor Yellow
+    Get-Content $gm | Select-Object -First 200 | ForEach-Object { Write-Host $_ }
+    Copy-Item $gm "$gm.bak.$((Get-Date).ToString('yyyyMMdd_HHmmss'))" -Force
+    Write-Host ".gitmodules backed up." -ForegroundColor Green
+    if ((Get-Content $gm -Raw) -match '\[submodule\s+"public_html"\]') {
+      Write-Host "Removing public_html submodule block (if present)..." -ForegroundColor Yellow
+      $content = Get-Content $gm -Raw
+      $new = [regex]::Replace($content,'(?s)\[submodule\s+"public_html"\].*?(?=(\r?\n\[|$))','')
+      $new = $new -replace "(\r?\n){3,}", "`r`n`r`n"
+      Set-Content -Path $gm -Value $new -Encoding UTF8
+      Write-Host ".gitmodules edited to remove public_html entry." -ForegroundColor Green
+    } else {
+      Write-Host "No public_html submodule entry found in .gitmodules." -ForegroundColor Cyan
+    }
+  } else {
+    Write-Host "No .gitmodules file present." -ForegroundColor Cyan
+  }
+
+  # 3. Ensure assets dir exists and write the new Apple-white royal theme CSS
+  $assetsDir = Join-Path (Get-Location) "public_html\assets"
+  if (-not (Test-Path $assetsDir)) { New-Item -Path $assetsDir -ItemType Directory -Force | Out-Null; Write-Host "Created assets dir." -ForegroundColor Green }
+  $targetCss = Join-Path $assetsDir "royal_unified.css"
+  $css = @'
+:root{--bg:#ffffff;--txt:#0b0b0b;--accent:#0b66ff;--gold:#d4af37;--card:#f3f6f9}
+body{margin:0;font-family:Inter,Segoe UI,Roboto,sans-serif;background:linear-gradient(180deg,#ffffff,#f6f7fa);color:var(--txt)}
+.hero--responsive{min-height:60vh;background:linear-gradient(180deg,#fbfcfe,#f7f9fb)}
+.hero__overlay{background:linear-gradient(180deg,rgba(255,255,255,0.95),rgba(250,250,252,0.95));padding:18px;border-radius:12px;box-shadow:0 10px 30px rgba(13,20,30,0.06)}
+a.btn{background:linear-gradient(90deg,var(--accent),#2fb3ff);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+.premium-badge{background:linear-gradient(90deg,var(--gold),#ffd36b);padding:6px 10px;border-radius:999px}
+'@
+PS C:\dalmiacomputers-automation>   Set-Content -Path $targetCss -Value $css -Encoding UTF8
+>> TerminatingError(Set-Content): "Cannot bind argument to parameter 'Path' because it is null."
+Set-Content: Cannot bind argument to parameter 'Path' because it is null.
+Set-Content: Cannot bind argument to parameter 'Path' because it is null.
+PS C:\dalmiacomputers-automation>   Write-Host "Wrote theme CSS to $targetCss" -ForegroundColor Green
+Wrote theme CSS to
+PS C:\dalmiacomputers-automation>   # 4. Git add/commit/push (only if changes present)
