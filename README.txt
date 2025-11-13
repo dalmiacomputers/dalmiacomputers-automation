@@ -43,3 +43,4 @@ Usage:
 1. Extract package.
 2. Run create_shortcut.ps1 as Administrator once to create desktop launcher, or run run_all.ps1 directly as Administrator.
 3. Follow on-screen prompts.
+deploy-test 11/13/2025 12:48:22
